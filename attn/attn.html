@@ -1,0 +1,72 @@
+<!-- Updated HTML & CSS to match the uploaded screenshot and work with doPost -->
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<title>تسجيل الحضور والانصراف</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="assets/logo.png" alt="شعار سنام الأمن">
+     <!-- <img src="https://i.imgur.com/97PrnR5.png" alt="شعار سليمان الراجحي العقارية"> -->
+    </div>
+    <h2>تسجيل الحضور والانصراف</h2>
+    <form id="attendanceForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">الموقع:</label>
+          <select id="location" name="location" required>
+            <option value="">اختر الموقع</option>
+            <option value="المركز 1">المركز 1</option>
+            <option value="المركز 4">المركز 4</option>
+            <option value="مكتب أ. محمد">مكتب أ. محمد</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="shiftTime">الوردية:</label>
+          <select id="shiftTime" name="shiftTime" required>
+            <option value="">اختر الوردية</option>
+            <option value="08:00 - 16:00">08:00 - 16:00</option>
+            <option value="16:00 - 00:00">16:00 - 00:00</option>
+            <option value="00:00 - 08:00">00:00 - 08:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fullName">اسم الموظف:</label>
+          <input id="fullName" name="fullName" placeholder="الاسم الرباعي" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="idNumber">رقم الهوية:</label>
+          <input id="idNumber" name="idNumber" maxlength="10" pattern="\d{10}" placeholder="10 أرقام" required
+		    oninvalid="this.setCustomValidity('ادخل الرقم الصحيح')" 
+  oninput="this.setCustomValidity('')">
+        </div>
+        <div class="form-group">
+          <label for="phoneNumber">رقم الجوال:</label>
+<input id="phoneNumber" name="phoneNumber" pattern="05\d{8}" maxlength="10" placeholder="05xxxxxxxx" required 
+  oninvalid="this.setCustomValidity('ادخل الرقم الصحيح')" 
+  oninput="this.setCustomValidity('')">
+        </div>
+      </div>
+      <div class="btns">
+         <button class="btn-checkin" type="submit">تسجيل الحضور</button>
+		<button class="btn-checkout" type="button">تسجيل الانصراف</button>
+       
+      </div>
+      <div class="status" id="statusMessage"></div>
+    </form>
+  </div>
+<script src="script.js"> </script>
+
+
+
+</body>
+</html>

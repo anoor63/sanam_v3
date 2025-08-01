@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تقرير الحالة الأمنية</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+    
+	@media print {
+  td:first-child,
+  th:first-child {
+    display: none !important;
+  }
+}
+	
+	body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
+      padding: 30px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 10px;
+    }
+    .header img {
+      height: 90px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #4d2c12;
+    }
+    .input-line {
+      margin: 15px 0;
+      font-size: 16px;
+    }
+    label {
+      font-weight: bold;
+      display: inline-block;
+      min-width: 140px;
+    }
+    input[type="text"], input[type="date"] {
+      border: none;
+      border-bottom: 1px solid #aaa;
+      background: #fdf4e8;
+      font-size: 16px;
+      padding: 5px 10px;
+      width: 300px;
+    }
+    .print-value {
+      display: none;
+      margin-right: 10px;
+      font-size: 16px;
+      color: #000;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+      font-size: 6px;
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .print-break {
+      page-break-before: always;
+      margin-top: 50px;
+    }
+
+    .noprint {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    @media print {
+      .noprint, input { display: none !important; }
+      .print-value { display: inline !important; }
+    }
+	@media print {
+  a[href] {
+    color: blue;
+    text-decoration: underline;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 6px;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+
+<div class="noprint">
+  <button onclick="window.print()" style="padding:10px 20px; font-size:16px; background-color:#4d2c12; color:white; border:none; border-radius:8px; cursor:pointer;">
+    🖨️ طباعة التقرير PDF
+  </button>
+</div>
+
+<div class="header">
+  <img src="assets/logo_rajhi.png" alt="شعار الراجحي">
+  <img src="assets/logo_sanam.png" alt="شعار سنام الأمن" style="height: 100px;">
+</div>
+
+<h1>تقرير الحالة الأمنية</h1>
+
+<div class="input-line">
+  <label>التاريخ:</label>
+  <input type="text" id="date" placeholder=""/>
+  <span class="print-value" id="print_date"></span>
+</div>
+
+<div class="input-line">
+  <label>الفترة:</label>
+  من <input type="date" id="from">
+  <span class="print-value" id="print_from"></span>
+  إلى <input type="date" id="to">
+  <span class="print-value" id="print_to"></span>
+</div>
+
+<div class="input-line">
+  <label>الموضوع:</label>
+  <input type="text" id="subject" placeholder="الحالة الأمنية لشهر ...">
+  <span class="print-value" id="print_subject"></span>
+</div>
+
+<div class="input-line">
+  <label>عدد الصفحات:</label>
+  <input type="text" id="pages" placeholder="تحسب تلقائيًا حسب المرفقات">
+  <span class="print-value" id="print_pages"></span>
+</div>
+
+<div class="input-line">
+  <label>اسم العميل:</label>
+  <input type="text" id="company" placeholder="شركة سليمان الراجحي العقارية أو الرفادة">
+  <span class="print-value" id="print_company"></span>
+</div>
+
+<div class="input-line">
+  <label>الموقع:</label>
+  <input type="text" id="site" placeholder="برج تلال تاورز / عرفات">
+  <span class="print-value" id="print_site"></span>
+</div>
+
+<p>السلام عليكم ورحمة الله وبركاته،</p>
+<p>
+  إشارة إلى عقد الحراسات الأمنية الموقع مع شركتكم الموقرة بخصوص تأمين الخدمات الأمنية لبرج تلال تاورز في حي النسيم بمكة المكرمة، تجدون في هذا التقرير الحالات الأمنية للموقع من تاريخ
+  <span id="from_placeholder">____</span> إلى تاريخ <span id="to_placeholder">____</span>.
+</p>
+<p>تقبلوا تحياتنا وتقديرنا،</p>
+<p>نسخة للأخ: علي رجب</p>
+<p>نسخة إلى: إدارة العمليات الأمنية</p>
+
+<h2 class="print-break">الصفحة 2 - الحالات الأمنية</h2>
+<div id="securityCases">جارٍ تحميل البيانات...</div>
+
+<h2 class="print-break">الصفحة 3 - الحضور والانصراف</h2>
+<div id="attendanceRecords">جارٍ تحميل البيانات...</div>
+
+<script>
+  const apiKey = "AIzaSyBYPUAnYE8GC4Vx32cDYSb8UH6YV-VWmEA";
+
+  async function fetchSheetData(sheetId, range) {
+    try {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.values && data.values.length > 0 ? data.values : [["لا توجد بيانات"]];
+    } catch (error) {
+      return [["خطأ في الاتصال بالجدول"]];
+    }
+  }
+
+  function renderTable(containerId, values) {
+    const container = document.getElementById(containerId);
+    let html = "<table><thead><tr>" + values[0].map(h => `<th>${h}</th>`).join("") + "</tr></thead><tbody>";
+    for (let i = 1; i < values.length; i++) {
+      html += "<tr>" + values[i].map(cell => `<td>${cell}</td>`).join("") + "</tr>";
+    }
+    html += "</tbody></table>";
+    container.innerHTML = html;
+  }
+
+  function parseDateCell(cellValue) {
+    const match = cellValue.match(/\d{4}[-/]\d{2}[-/]\d{2}|\d{2}[-/]\d{2}[-/]\d{4}/);
+    return match ? new Date(match[0].replace(/-/g, '/')) : null;
+  }
+
+  function filterByDateRange(data, fromDateStr, toDateStr, colIndex = 0) {
+    const fromDate = new Date(fromDateStr);
+    const toDate = new Date(toDateStr);
+    if (isNaN(fromDate) || isNaN(toDate)) return data;
+    return data.filter((row, idx) => {
+      if (idx === 0) return true;
+      const date = parseDateCell(row[colIndex] || "");
+      return date && date >= fromDate && date <= toDate;
+    });
+  }
+
+  function estimatePages(rows1, rows2) {
+    const rowsPerPage = 40;
+    return 1 + Math.ceil((rows1.length - 1) / rowsPerPage) + Math.ceil((rows2.length - 1) / rowsPerPage);
+  }
+
+  function updateDocumentTitleWithDateRange() {
+    const from = document.getElementById("from").value;
+    const to = document.getElementById("to").value;
+    const subject = document.getElementById("subject").value || "تقرير أمني";
+    if (from && to) {
+      document.title = `${subject} - من ${from} إلى ${to}`;
+    } else {
+      document.title = subject;
+    }
+  }
+
+  async function loadData() {
+    const fromDate = document.getElementById("from").value;
+    const toDate = document.getElementById("to").value;
+
+    const sheet1Raw = await fetchSheetData("19Xwski_yAkJwvMio8hQIt7FmSKDzSMo6StGP0pRdiyw", "ردود النموذج 1!A1:J");
+    const sheet2Raw = await fetchSheetData("1zq07aJ_9w27WW0av_Qxrq6ZBWb1uuHHWeuRy-lS9aI0", "البيانات!A1:H");
+
+    const filtered1 = (fromDate && toDate) ? filterByDateRange(sheet1Raw, fromDate, toDate, 0) : sheet1Raw;
+    const filtered2 = (fromDate && toDate) ? filterByDateRange(sheet2Raw, fromDate, toDate, 0) : sheet2Raw;
+
+    renderTable("securityCases", filtered1);
+    renderTable("attendanceRecords", filtered2);
+
+    const estimated = estimatePages(filtered1, filtered2);
+    document.getElementById("pages").value = estimated;
+    document.getElementById("print_pages").textContent = estimated;
+  }
+
+  const fields = ["date", "from", "to", "subject", "pages", "company", "site"];
+  window.addEventListener("load", () => {
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      const span = document.getElementById("print_" + id);
+      const saved = localStorage.getItem("report_" + id);
+      if (saved) {
+        el.value = saved;
+        if (span) span.textContent = saved;
+      }
+      el.addEventListener("input", () => {
+        localStorage.setItem("report_" + id, el.value);
+        if (span) span.textContent = el.value;
+        if (id === "from") document.getElementById("from_placeholder").textContent = el.value;
+        if (id === "to") document.getElementById("to_placeholder").textContent = el.value;
+        updateDocumentTitleWithDateRange();
+      });
+    });
+    loadData();
+    updateDocumentTitleWithDateRange();
+  });
+
+  document.getElementById("from").addEventListener("change", () => {
+    loadData();
+    updateDocumentTitleWithDateRange();
+  });
+  document.getElementById("to").addEventListener("change", () => {
+    loadData();
+    updateDocumentTitleWithDateRange();
+  });
+</script>
+
+</body>
+</html>
